@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const TransactionsSchema = new mongoose.Schema({
-  transactionsDate: {
+  transactionDate: {
     type: Date,
     required: true,
   },
@@ -15,12 +15,40 @@ const TransactionsSchema = new mongoose.Schema({
     required: true,
   },
   description: {
-    type: Object,
-    required: true,
+    type: "object",
+    oneOf: [
+      {
+        required: ["client"],
+      },
+      {
+        required: ["item"],
+      },
+      {
+        required: ["creditor"],
+      },
+      {
+        required: ["client", "item"],
+      },
+      {
+        required: ["client", "creditor"],
+      },
+      {
+        required: ["item", "creditor"],
+      },
+      {
+        required: ["client", "item", "creditor"],
+      },
+    ],
     properties: {
-      client: { type: String },
-      item: { type: String },
-      creditor: { type: String },
+      client: {
+        type: "string",
+      },
+      item: {
+        type: "string",
+      },
+      creditor: {
+        type: "string",
+      },
     },
   },
 });

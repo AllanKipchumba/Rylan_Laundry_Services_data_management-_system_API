@@ -1,5 +1,5 @@
-const config = require("../config/config");
-const { mongoDB_url_local, mongoDB_url_prod } = config.mongoDB_url_local;
+const config = require("../config/env/config");
+// const { mongoDB_url_local, mongoDB_url_prod } = config.mongoDB_url_local;
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
