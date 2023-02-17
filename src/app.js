@@ -10,5 +10,6 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/transactions", require("./routes/transactions/transactions"));
+app.use("/monthlyAnalytics", require("./routes/analytics/monthlyAnalytics"));
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
