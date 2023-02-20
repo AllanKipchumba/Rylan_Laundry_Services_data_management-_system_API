@@ -1,4 +1,4 @@
-const Transactions = require("../models/transactions");
+const Transactions = require("../../models/transactions");
 
 const getMonthlyTotals = async (req, res) => {
   try {
@@ -110,26 +110,6 @@ const getMonthlyTotals = async (req, res) => {
       },
     ]);
 
-    //GET GROSS SALES SINCE INCEPTION
-    const grossSales = await Transactions.aggregate([
-      { $match: { transactionType: "sale" } },
-      {
-        $group: {
-          _id: null,
-          count: { $sum: 1 },
-          totalAmount: { $sum: "$amount" },
-        },
-      },
-    ]).exec(function (err, results) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const result = results[0];
-      console.log("Total number of sales:", result.count);
-      console.log("Total amount made from sales:", result.totalAmount);
-    });
-
     const sales = salesTotal[0] ? salesTotal[0].total : 0;
     const credits = creditsTotal[0] ? creditsTotal[0].total : 0;
     const expenses = expensesTotal[0] ? expensesTotal[0].total : 0;
@@ -143,9 +123,6 @@ const getMonthlyTotals = async (req, res) => {
       : 0;
 
     const debts = debitsForRyl + debitsForLan;
-
-    const allSales = grossSales[0] ? grossSales[0].totalAmount : 0;
-    const clientsServed = grossSales[0] ? grossSales[0].count : 0;
 
     /*
       revenue sharing arranngement:
