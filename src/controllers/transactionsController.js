@@ -68,7 +68,49 @@ const deleteTransaction = async (req, res) => {
           return res.status(404).send(`Transaction record not found`);
         }
 
-        res.status(204);
+        res.status(204).send();
+      });
+  } catch (error) {
+    res.status(500).send(`Error: ${error}`);
+    console.log(error);
+  }
+};
+
+//fetch all transactions of a given month (sales, credits, expenses)
+const getMonthlyTransactions = async (req, res) => {
+  try {
+    const { month, year } = req.body;
+
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+    await Transaction.find({
+      transactionDate: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    })
+      .exec()
+      .then((transactions) => {
+        if (!transactions) {
+          return res.status(404).send(`Transaction record not found`);
+        }
+
+        const sales = transactions.filter(
+          (transaction) => transaction.transactionType === "sale"
+        );
+        const expenditure = transactions.filter(
+          (transaction) => transaction.transactionType === "expense"
+        );
+        const credits = transactions.filter(
+          (transaction) => transaction.transactionType === "credit"
+        );
+
+        res.status(200).json({
+          sales,
+          expenditure,
+          credits,
+        });
       });
   } catch (error) {
     res.status(500).send(`Error: ${error}`);
@@ -81,4 +123,5 @@ module.exports = {
   fetchTransaction,
   editTransaction,
   deleteTransaction,
+  getMonthlyTransactions,
 };
