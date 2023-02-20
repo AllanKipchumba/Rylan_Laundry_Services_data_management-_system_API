@@ -124,8 +124,8 @@ const getMonthlyTotals = async (req, res) => {
 
     const debts = debitsForRyl + debitsForLan;
 
+    //     REVENUE SHARING ARRANGEMENT
     /*
-      revenue sharing arranngement:
       (case 1) business revenue is 30% of the total sales
           sharable revenue = 70% of the total sales
             ryl = 30% of the sharable revenue
@@ -140,7 +140,7 @@ const getMonthlyTotals = async (req, res) => {
             lan = 65% of the sharable revenue
     */
 
-    // algorithm for revenue sharing scheme
+    // algorithm for revenue the sharing scheme
     const calculateRevenueSharing = (sales, businessRevenuePercentage) => {
       const businessRevenue = businessRevenuePercentage * sales;
       let sharableRevenue;
@@ -199,7 +199,6 @@ const getMonthlyTotals = async (req, res) => {
       lanRevenue,
       debitsForLan,
       expectedPayToLan,
-      allSales,
     });
   } catch (error) {
     res.status(500).send(`Error: ${error}`);

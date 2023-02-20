@@ -5,5 +5,6 @@ const businessAnalyticsController = require("../controllers/analyticsControler/b
 
 router.route("/monthly").get(monthlyAnalyticsController.getMonthlyTotals);
 router.route("/business").get(businessAnalyticsController.grossSales);
+router.route("/clientRecord").get(businessAnalyticsController.clientRecord);
 
 module.exports = router;

@@ -32,5 +32,43 @@ const grossSales = async (req, res) => {
 };
 
 //Interaction with client
+const clientRecord = async (req, res) => {
+  try {
+    const { client } = req.body;
 
-module.exports = { grossSales };
+    await Transactions.aggregate([
+      {
+        $match: {
+          transactionType: "sale",
+          "description.client": { $regex: new RegExp(client, "i") },
+        },
+      },
+      {
+        $group: {
+          _id: "$description.client",
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ])
+      .exec()
+      .then((results) => {
+        if (results.length === 0) {
+          return res
+            .status(404)
+            .send(`No transactions found for client: ${client}`);
+        }
+
+        const result = results[0];
+        const { _id, count, totalAmount } = result;
+        const clientRecord = { result };
+
+        res.status(200).send({ clientRecord });
+      });
+  } catch (error) {
+    res.status(500).send(`Error: ${error}`);
+    console.log(error);
+  }
+};
+
+module.exports = { grossSales, clientRecord };
