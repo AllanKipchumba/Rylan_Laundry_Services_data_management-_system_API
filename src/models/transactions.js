@@ -48,6 +48,7 @@ const TransactionsSchema = new mongoose.Schema({
       },
       creditor: {
         type: "string",
+        enum: ["ryl", "lan"],
       },
     },
   },
