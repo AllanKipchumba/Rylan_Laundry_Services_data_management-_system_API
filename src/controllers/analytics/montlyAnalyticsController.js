@@ -8,9 +8,9 @@ const monthlyAnalytics = async (req, res) => {
     const { month, year } = req.body;
 
     let data = {
-      totalSales,
-      totalExpenses,
-      totalCredits,
+      sales,
+      expenses,
+      credits,
       deductions,
       profit,
       debits: {
