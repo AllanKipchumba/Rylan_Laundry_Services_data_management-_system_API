@@ -1,11 +1,13 @@
+require("./db/mongoose");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const { prod_port, dev_port } = require("./config/env/config");
-require("./db/mongoose");
 
 const port = prod_port || dev_port;
 const app = express();
 
+app.use(cookieParser()); //middleware for cookies
 app.use(express.json());
 app.use(cors());
 
