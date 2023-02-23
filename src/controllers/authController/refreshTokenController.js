@@ -5,99 +5,67 @@ const {
   access_token_secret,
 } = require("../../config/env/config");
 
-const getRefreshToken = async (req, res) => {
+const getAccessToken = async (req, res) => {
   try {
-    //extract cookie from user's request
     const cookies = req.cookies;
-
     if (!cookies?.jwt) return res.sendStatus(401); //unauthorised
-
     const refreshToken = cookies.jwt;
 
-    //clear refresh tokens on client's browser
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      //  sameSite: "None",
-      //  secure: true
-    });
-
-    //find user with the refresh token
     await User.findOne({ refreshToken })
       .exec()
       .then((foundUser) => {
-        //user was not found
-        if (!foundUser) {
-          // Detected refresh token reuse!
-          jwt.verify(
-            refreshToken,
-            refresh_token_secret,
-            async (err, decoded) => {
-              if (err) return res.sendStatus(403); //Forbidden
+        if (!foundUser)
+          return res.status(403).send(`No user with such refresh token found`); //Forbidden
 
-              const hackedUser = await User.findOne({
-                _id: decoded._id,
-              }).exec();
-
-              hackedUser.refreshToken = [];
-              const result = await hackedUser.save();
-              console.log(result);
-            }
-          );
-          return res.sendStatus(403); //Forbidden
-        }
-
-        //user was found
-        //remove the refresh token used to request a new access token
+        //remove the used refresh token
         const newRefreshTokenArray = foundUser.refreshToken.filter(
           (rt) => rt !== refreshToken
         );
 
-        // evaluate the refresh token
+        //verify refresh token
         jwt.verify(refreshToken, refresh_token_secret, async (err, decoded) => {
-          //expired refresh token
-          if (err) {
-            foundUser.refreshToken = [...newRefreshTokenArray];
-            await foundUser.save();
-          }
+          try {
+            if (decoded._id !== foundUser._id.toString()) {
+              return res.sendStatus(403);
+            }
 
-          if (err || foundUser._id !== decoded._id) return res.sendStatus(403);
+            const roles = Object.values(foundUser.roles).filter(Boolean);
 
-          // Refresh token was still valid
-          const roles = Object.values(foundUser.roles);
-
-          //create a new access token
-          const accessToken = jwt.sign(
-            {
-              UserInfo: {
-                _id: decoded._id,
-                roles: roles,
+            //create a new access token
+            const accessToken = jwt.sign(
+              {
+                UserInfo: {
+                  _id: decoded._id,
+                  roles,
+                },
               },
-            },
-            access_token_secret,
-            { expiresIn: "10s" } //should expire in 10mins - 15 mins in prod
-          );
+              access_token_secret,
+              { expiresIn: "15s" }
+            );
 
-          //create a new refresh token
-          const newRefreshToken = jwt.sign(
-            { _id: foundUser._id },
-            refresh_token_secret,
-            { expiresIn: "1d" }
-          );
+            //create new refresh token
+            const newRefreshToken = jwt.sign(
+              { _id: foundUser._id.toString() },
+              refresh_token_secret,
+              { expiresIn: "1d" }
+            );
 
-          // Save the refreshToken with current user
-          foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-          await foundUser.save();
+            //save refresh token with current user
+            foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+            await foundUser.save();
 
-          // Create a Secure Cookie with refresh token
-          res.cookie("jwt", newRefreshToken, {
-            httpOnly: true,
-            //   secure: true,
-            //   sameSite: "None",
-            maxAge: 24 * 60 * 60 * 1000,
-          });
+            // Create secure Cookie with refresh token
+            res.cookie("jwt", newRefreshToken, {
+              httpOnly: true,
+              // secure: true,
+              // sameSite: "None",
+              maxAge: 24 * 60 * 60 * 1000,
+            });
 
-          //send user roles along with the access token-(as a cookie)
-          res.json({ roles, accessToken });
+            res.status(201).json({ roles, accessToken });
+          } catch (error) {
+            res.status(500).send(`Error: ${error}`);
+          }
         });
       });
   } catch (error) {
@@ -106,4 +74,4 @@ const getRefreshToken = async (req, res) => {
   }
 };
 
-module.exports = { getRefreshToken };
+module.exports = { getAccessToken };

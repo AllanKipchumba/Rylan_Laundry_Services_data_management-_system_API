@@ -7,6 +7,6 @@ const refreshTokenController = require("../../controllers/authController/refresh
 router.post("/login", authController.handleLogin);
 router.post("/register", registerUserController.registerUser);
 router.get("/logout", logoutController.handleLogout);
-router.get("/refresh-token", refreshTokenController.getRefreshToken);
+router.get("/refresh-token", refreshTokenController.getAccessToken);
 
 module.exports = router;
