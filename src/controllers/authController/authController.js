@@ -27,7 +27,7 @@ const handleLogin = async (req, res) => {
     if (pwdMatch) {
       const roles = Object.values(foundUser.roles).filter(Boolean);
 
-      // create JWTs
+      // create accesss token
       const accessToken = jwt.sign(
         {
           UserInfo: {
@@ -36,9 +36,10 @@ const handleLogin = async (req, res) => {
           },
         },
         access_token_secret,
-        { expiresIn: "900s" } // 15 mins
+        { expiresIn: "15s" }
       );
 
+      //create refresh token
       const newRefreshToken = jwt.sign(
         { _id: foundUser._id },
         refresh_token_secret,
@@ -63,8 +64,8 @@ const handleLogin = async (req, res) => {
 
         res.clearCookie("jwt", {
           httpOnly: true,
-          sameSite: "None",
-          secure: true,
+          // sameSite: "None",
+          // secure: true,
         });
       }
 
