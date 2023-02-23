@@ -59,10 +59,7 @@ const clientRecord = async (req, res) => {
             .send(`No transactions found for client: ${client}`);
         }
 
-        const result = results[0];
-        const { _id, count, totalAmount } = result;
-        const clientRecord = { result };
-
+        const clientRecord = results[0];
         res.status(200).send({ clientRecord });
       });
   } catch (error) {

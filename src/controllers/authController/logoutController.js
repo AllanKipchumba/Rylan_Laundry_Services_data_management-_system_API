@@ -11,31 +11,36 @@ const handleLogout = async (req, res) => {
     const refreshToken = cookies.jwt;
 
     // Is refreshToken in db?
-    const foundUser = await User.findOne({ refreshToken }).exec();
+    await User.findOne({ refreshToken })
+      .exec()
+      .then(async (foundUser) => {
+        if (!foundUser) {
+          res.clearCookie("jwt", {
+            httpOnly: true,
+            //  sameSite: "None",
+            //   secure: true
+          });
+          return res.sendStatus(204);
+        }
 
-    if (!foundUser) {
-      res.clearCookie("jwt", {
-        httpOnly: true,
-        //  sameSite: "None",
-        //   secure: true
+        // Delete refreshToken in db
+        // foundUser.refreshToken = foundUser.refreshToken.filter(
+        //   (rt) => rt !== refreshToken
+        // );
+
+        //empty all refresh tokens
+        foundUser.refreshToken = [];
+
+        await foundUser.save();
+
+        res.clearCookie("jwt", {
+          httpOnly: true,
+          // sameSite: "None",
+          // secure: true
+        });
+
+        res.sendStatus(204);
       });
-      return res.sendStatus(204);
-    }
-
-    // Delete refreshToken in db
-    foundUser.refreshToken = foundUser.refreshToken.filter(
-      (rt) => rt !== refreshToken
-    );
-
-    await foundUser.save();
-
-    console.log(result);
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      // sameSite: "None",
-      // secure: true
-    });
-    res.sendStatus(204);
   } catch (error) {
     res.status(500).send(`Error: ${error}`);
     console.log(error);

@@ -40,7 +40,7 @@ const getAccessToken = async (req, res) => {
                 },
               },
               access_token_secret,
-              { expiresIn: "15s" }
+              { expiresIn: "600s" }
             );
 
             //create new refresh token
