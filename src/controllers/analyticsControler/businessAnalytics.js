@@ -1,6 +1,6 @@
 const Transactions = require("../../models/transactions");
 
-//gross sales record since inception
+//sales record since inception
 const grossSales = async (req, res) => {
   try {
     await Transactions.aggregate([
@@ -31,7 +31,7 @@ const grossSales = async (req, res) => {
   }
 };
 
-//Interaction with client
+//client record
 const clientRecord = async (req, res) => {
   try {
     const { client } = req.body;

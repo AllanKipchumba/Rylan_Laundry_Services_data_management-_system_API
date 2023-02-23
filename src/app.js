@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use("/auth", require("./routes/auth/auth"));
 
-app.use(verifyJWT);
+app.use(verifyJWT); //you must be authorised to access routes below
 app.use("/transactions", require("./routes/transactions/transactions"));
 app.use("/analytics", require("./routes/analytics/analytics"));
 

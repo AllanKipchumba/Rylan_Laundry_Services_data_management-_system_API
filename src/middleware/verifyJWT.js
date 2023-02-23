@@ -7,10 +7,9 @@ const verifyJWT = (req, res, next) => {
   if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401);
 
   const token = authHeader.split(" ")[1];
-  console.log(token);
 
   jwt.verify(token, access_token_secret, (err, decoded) => {
-    if (err) return res.status(403).send(`Invalid token`);
+    if (err) return res.status(403).send(err);
 
     //access user ID and roles
     req.user = decoded.UserInfo._id;

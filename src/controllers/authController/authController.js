@@ -8,7 +8,7 @@ const {
 
 const handleLogin = async (req, res) => {
   try {
-    const cookies = req.cookie;
+    // const cookies = req.cookie;
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -26,6 +26,12 @@ const handleLogin = async (req, res) => {
         const pwdMatch = await bcrypt.compare(password, foundUser.password);
 
         if (pwdMatch) {
+          res.clearCookie("jwt", {
+            httpOnly: true,
+            // sameSite: "None",
+            // secure: true,
+          });
+
           const roles = Object.values(foundUser.roles).filter(Boolean);
 
           // create accesss token
@@ -37,7 +43,7 @@ const handleLogin = async (req, res) => {
               },
             },
             access_token_secret,
-            { expiresIn: "600s" } //use 10 mins in prod
+            { expiresIn: "600s" } //use 10 mins = 600s in prod
           );
 
           //create refresh token
@@ -47,34 +53,8 @@ const handleLogin = async (req, res) => {
             { expiresIn: "1d" }
           );
 
-          //remove existing refresh token
-          let newRefreshTokenArray = !cookies?.jwt
-            ? foundUser.refreshToken
-            : foundUser.refreshToken.filter((rt) => rt !== cookies.jwt);
-
-          if (cookies?.jwt) {
-            const refreshToken = cookies.jwt;
-
-            await User.findOne({ refreshToken })
-              .exec()
-              .then((foundToken) => {
-                // Detected refresh token reuse!
-                if (!foundToken) {
-                  console.log("Attempted refresh token reuse at login!");
-                  // clear out ALL previous refresh tokens
-                  newRefreshTokenArray = [];
-                }
-              });
-
-            res.clearCookie("jwt", {
-              httpOnly: true,
-              // sameSite: "None",
-              // secure: true,
-            });
-          }
-
-          // Save refreshToken with current user
-          foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+          // Save refreshtokens with current user
+          foundUser.refreshToken = [newRefreshToken];
 
           await foundUser.save();
 

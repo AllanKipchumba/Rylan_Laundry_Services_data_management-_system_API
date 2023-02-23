@@ -24,6 +24,8 @@ const getAccessToken = async (req, res) => {
 
         //verify refresh token
         jwt.verify(refreshToken, refresh_token_secret, async (err, decoded) => {
+          if (err) return console.log(err);
+
           try {
             if (decoded._id !== foundUser._id.toString()) {
               return res.sendStatus(403);
@@ -40,7 +42,7 @@ const getAccessToken = async (req, res) => {
                 },
               },
               access_token_secret,
-              { expiresIn: "600s" }
+              { expiresIn: "600s" } //use 10mins -600s in prod
             );
 
             //create new refresh token
@@ -62,9 +64,10 @@ const getAccessToken = async (req, res) => {
               maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.status(201).json({ roles, accessToken });
+            res.json({ roles, accessToken });
           } catch (error) {
             res.status(500).send(`Error: ${error}`);
+            console.log(error);
           }
         });
       });

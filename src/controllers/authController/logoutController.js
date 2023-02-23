@@ -20,13 +20,8 @@ const handleLogout = async (req, res) => {
             //  sameSite: "None",
             //   secure: true
           });
-          return res.sendStatus(204);
+          return res.status(204).send(`User not found`);
         }
-
-        // Delete refreshToken in db
-        // foundUser.refreshToken = foundUser.refreshToken.filter(
-        //   (rt) => rt !== refreshToken
-        // );
 
         //empty all refresh tokens
         foundUser.refreshToken = [];
