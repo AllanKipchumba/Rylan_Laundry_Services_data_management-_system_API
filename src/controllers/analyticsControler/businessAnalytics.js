@@ -1,6 +1,6 @@
 const Transactions = require("../../models/transactions");
 
-//sales record since inception
+//get the business progress report
 const grossSales = async (req, res) => {
   try {
     await Transactions.aggregate([
@@ -31,10 +31,10 @@ const grossSales = async (req, res) => {
   }
 };
 
-//client record
+//get the transaction report with a given client
 const clientRecord = async (req, res) => {
   try {
-    const { client } = req.body;
+    const { clientName: client } = req.params;
 
     await Transactions.aggregate([
       {
@@ -68,10 +68,9 @@ const clientRecord = async (req, res) => {
   }
 };
 
-//get the transaction record with a given client
+//get the transaction history with a client
 const clientTransactionHistory = async (req, res) => {
-  const clientName = req.params.clientName;
-
+  const { clientName } = req.params;
   const regex = new RegExp(clientName, "i"); // "i" flag makes the regex case-insensitive
 
   try {
@@ -87,7 +86,6 @@ const clientTransactionHistory = async (req, res) => {
     ])
       .exec()
       .then((transactions) => {
-        //no transaction record with client
         if (transactions.length === 0) {
           return res.status(404).json({ error: "No transactions found" });
         }
@@ -100,4 +98,39 @@ const clientTransactionHistory = async (req, res) => {
   }
 };
 
-module.exports = { grossSales, clientRecord, clientTransactionHistory };
+//get clients report
+const clients = async (req, res) => {
+  try {
+    await Transactions.aggregate([
+      {
+        $group: {
+          _id: "$description.client",
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]).then((clients) => {
+      if (clients.length === 0) {
+        return res.status(404).json({ error: "No transactions found" });
+      }
+
+      //gets the total number of clients served
+      const clientsServed = clients.length;
+
+      res.status(200).json({ clientsServed, clients });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = {
+  grossSales,
+  clientRecord,
+  clientTransactionHistory,
+  clients,
+};

@@ -5,34 +5,39 @@ const businessAnalyticsController = require("../../controllers/analyticsControle
 const ROLES_LIST = require("../../config/rolesList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
-router
-  .route("/monthly")
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    monthlyAnalyticsController.getMonthlyTotals
-  );
+//get a month's transaction record
+router.get(
+  "/monthly",
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  monthlyAnalyticsController.getMonthlyTotals
+);
 
-router
-  //gets how the business is progressing
-  .route("/business")
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    businessAnalyticsController.grossSales
-  );
+//get the business progress report
+router.get(
+  "/business",
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  businessAnalyticsController.grossSales
+);
 
-router
-  .route("/clientRecord")
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    businessAnalyticsController.clientRecord
-  );
+//get the transaction report with a given client
+router.get(
+  "/client/:clientName",
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  businessAnalyticsController.clientRecord
+);
 
-router
-  //get the transaction record with a given client
-  .route("/transactions/:clientName")
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    businessAnalyticsController.clientTransactionHistory
-  );
+//get the transaction history with a client
+router.get(
+  "/transactions/:clientName",
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  businessAnalyticsController.clientTransactionHistory
+);
+
+//get clients report
+router.get(
+  "/clients",
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  businessAnalyticsController.clients
+);
 
 module.exports = router;
