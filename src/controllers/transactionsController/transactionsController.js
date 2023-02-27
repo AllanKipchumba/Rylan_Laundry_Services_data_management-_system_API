@@ -90,6 +90,7 @@ const getMonthlyTransactions = async (req, res) => {
         $lte: endOfMonth,
       },
     })
+      .sort({ transactionDate: -1 })
       .exec()
       .then((transactions) => {
         if (!transactions) {

@@ -68,4 +68,36 @@ const clientRecord = async (req, res) => {
   }
 };
 
-module.exports = { grossSales, clientRecord };
+//get the transaction record with a given client
+const clientTransactionHistory = async (req, res) => {
+  const clientName = req.params.clientName;
+
+  const regex = new RegExp(clientName, "i"); // "i" flag makes the regex case-insensitive
+
+  try {
+    await Transactions.aggregate([
+      {
+        $match: {
+          "description.client": { $regex: regex },
+        },
+      },
+      {
+        $sort: { transactionDate: -1 },
+      },
+    ])
+      .exec()
+      .then((transactions) => {
+        //no transaction record with client
+        if (transactions.length === 0) {
+          return res.status(404).json({ error: "No transactions found" });
+        }
+
+        res.status(200).json(transactions);
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+module.exports = { grossSales, clientRecord, clientTransactionHistory };
