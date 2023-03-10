@@ -9,15 +9,15 @@ const {
 const handleLogin = async (req, res) => {
   try {
     // const cookies = req.cookie;
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res
         .status(400)
-        .json({ message: "Email and password are required." });
+        .json({ message: "Username and password are required." });
     }
 
-    await User.findOne({ email })
+    await User.findOne({ username })
       .exec()
       .then(async (foundUser) => {
         if (!foundUser) return res.sendStatus(401); //Unauthorized
@@ -67,7 +67,9 @@ const handleLogin = async (req, res) => {
           });
 
           // Send authorization roles and access token to user
-          res.json({ roles, accessToken });
+          res.json({ username, roles, accessToken });
+        } else {
+          res.status(401).json("Invalid credentials!");
         }
       });
   } catch (error) {

@@ -10,17 +10,11 @@ router
     verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
     transactionsController.createNewTransaction
   )
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    transactionsController.getMonthlyTransactions
-  );
+  .get(transactionsController.getMonthlyTransactions);
 
 router
   .route("/:id")
-  .get(
-    verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-    transactionsController.fetchTransaction
-  )
+  .get(transactionsController.fetchTransaction)
   .patch(
     verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
     transactionsController.editTransaction

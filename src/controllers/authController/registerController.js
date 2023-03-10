@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, roles } = req.body;
+    const { username, email, password, roles } = req.body;
     if (!email || !password)
       return res
         .status(400)
@@ -14,7 +14,8 @@ const registerUser = async (req, res) => {
 
     //create and store the new user
     const user = await User.create({
-      email: email,
+      username,
+      email,
       password: hashedPwd,
       roles,
     });
