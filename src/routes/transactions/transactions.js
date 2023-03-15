@@ -9,8 +9,8 @@ router
   .post(
     verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
     transactionsController.createNewTransaction
-  )
-  .get(transactionsController.getMonthlyTransactions);
+  );
+router.route("/monthly").post(transactionsController.getMonthlyTransactions);
 
 router
   .route("/:id")
