@@ -4,7 +4,7 @@ const monthlyAnalyticsController = require("../../controllers/analyticsControler
 const businessAnalyticsController = require("../../controllers/analyticsControler/businessAnalytics");
 
 //get a month's transaction record
-router.get("/monthly", monthlyAnalyticsController.getMonthlyTotals);
+router.post("/monthly", monthlyAnalyticsController.getMonthlyTotals);
 
 //get the business progress report
 router.get("/business", businessAnalyticsController.grossSales);
