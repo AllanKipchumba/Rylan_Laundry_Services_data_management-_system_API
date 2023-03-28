@@ -64,7 +64,9 @@ const getAccessToken = async (req, res) => {
               maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.json({ roles, accessToken });
+            const username = foundUser.username;
+
+            res.json({ username, roles, accessToken });
           } catch (error) {
             res.status(500).send(`Error: ${error}`);
             console.log(error);
