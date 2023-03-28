@@ -43,7 +43,7 @@ const handleLogin = async (req, res) => {
               },
             },
             access_token_secret,
-            { expiresIn: "600s" } //use 10 mins = 600s in prod
+            { expiresIn: "10800s" } //use 10 mins = 600s in prod,using 3hrs now
           );
 
           //create refresh token
