@@ -4,13 +4,14 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const verifyJWT = require("./middleware/verifyJWT");
+const corsOptions = require("./config/cors/corsOptions");
 
 const port = prod_port || dev_port;
 const app = express();
 
 app.use(cookieParser()); //middleware for cookies
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use("/auth", require("./routes/auth/auth"));
 
