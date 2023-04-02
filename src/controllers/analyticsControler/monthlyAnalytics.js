@@ -138,6 +138,10 @@ const getMonthlyTotals = async (req, res) => {
           sharable revenue = 80% of the total sales
             ryl = 35% of the sharable revenue
             lan = 65% of the sharable revenue
+      (case 4) business revenue is 25% of the total sales
+          sharable revenue = 75% of the total sales
+            ryl = 33% of the sharable revenue
+            lan = 67% of the sharable revenue
     */
 
     // algorithm for revenue the sharing scheme

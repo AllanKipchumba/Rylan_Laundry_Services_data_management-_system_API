@@ -54,5 +54,16 @@ const TransactionsSchema = new mongoose.Schema({
   },
 });
 
+// Add a pre-save middleware function to clean up the client and item properties
+TransactionsSchema.pre("save", function (next) {
+  if (this.description.client) {
+    this.description.client = this.description.client.toLowerCase().trim();
+  }
+  if (this.description.item) {
+    this.description.item = this.description.item.toLowerCase().trim();
+  }
+  next();
+});
+
 const Transaction = mongoose.model("Transaction", TransactionsSchema);
 module.exports = Transaction;
