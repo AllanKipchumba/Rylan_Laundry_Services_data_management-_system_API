@@ -21,4 +21,13 @@ router.get(
 //get clients report
 router.get("/clients", businessAnalyticsController.clients);
 
+// get a record of the total revenue from a client per month per year
+router.get(
+  "/revenueRecord/:clientName",
+  businessAnalyticsController.RevenueFromClient
+);
+
+//get a record of the total sales per month per year
+router.get("/cashFlow", businessAnalyticsController.cashFlowAnalysis);
+
 module.exports = router;
