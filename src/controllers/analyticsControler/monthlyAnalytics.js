@@ -171,6 +171,7 @@ const getMonthlyTotals = async (req, res) => {
           sharableRevenue = 0.75 * sales;
           rylRevenue = 0.33 * sharableRevenue;
           lanRevenue = 0.67 * sharableRevenue;
+          break;
         default:
           throw new Error("Invalid business revenue percentage");
       }
