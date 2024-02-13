@@ -1,4 +1,4 @@
-const Transactions = require("../../models/transactions");
+const Transactions = require('../../models/transactions');
 
 const getMonthlyTotals = async (req, res) => {
   try {
@@ -15,14 +15,14 @@ const getMonthlyTotals = async (req, res) => {
             $gte: startOfMonth,
             $lte: endOfMonth,
           },
-          transactionType: "sale",
+          transactionType: 'sale',
         },
       },
       {
         $group: {
           _id: null,
           total: {
-            $sum: "$amount",
+            $sum: '$amount',
           },
         },
       },
@@ -36,14 +36,14 @@ const getMonthlyTotals = async (req, res) => {
             $gte: startOfMonth,
             $lte: endOfMonth,
           },
-          transactionType: "expense",
+          transactionType: 'expense',
         },
       },
       {
         $group: {
           _id: null,
           total: {
-            $sum: "$amount",
+            $sum: '$amount',
           },
         },
       },
@@ -57,14 +57,14 @@ const getMonthlyTotals = async (req, res) => {
             $gte: startOfMonth,
             $lte: endOfMonth,
           },
-          transactionType: "credit",
+          transactionType: 'credit',
         },
       },
       {
         $group: {
           _id: null,
           total: {
-            $sum: "$amount",
+            $sum: '$amount',
           },
         },
       },
@@ -78,14 +78,14 @@ const getMonthlyTotals = async (req, res) => {
             $gte: startOfMonth,
             $lte: endOfMonth,
           },
-          "description.creditor": "ryl",
-          transactionType: "credit",
+          'description.creditor': 'ryl',
+          transactionType: 'credit',
         },
       },
       {
         $group: {
           _id: null,
-          totalCredits: { $sum: "$amount" },
+          totalCredits: { $sum: '$amount' },
         },
       },
     ]);
@@ -98,14 +98,14 @@ const getMonthlyTotals = async (req, res) => {
             $gte: startOfMonth,
             $lte: endOfMonth,
           },
-          "description.creditor": "lan",
-          transactionType: "credit",
+          'description.creditor': 'lan',
+          transactionType: 'credit',
         },
       },
       {
         $group: {
           _id: null,
-          totalCredits: { $sum: "$amount" },
+          totalCredits: { $sum: '$amount' },
         },
       },
     ]);
@@ -172,15 +172,20 @@ const getMonthlyTotals = async (req, res) => {
           rylRevenue = 0.33 * sharableRevenue;
           lanRevenue = 0.67 * sharableRevenue;
           break;
+        case 0.12:
+          sharableRevenue = 0.88 * sales;
+          rylRevenue = 0.35 * sharableRevenue;
+          lanRevenue = 0.65 * sharableRevenue;
+          break;
         default:
-          throw new Error("Invalid business revenue percentage");
+          throw new Error('Invalid business revenue percentage');
       }
 
       return { businessRevenue, sharableRevenue, rylRevenue, lanRevenue };
     };
 
     const { businessRevenue, sharableRevenue, rylRevenue, lanRevenue } =
-      calculateRevenueSharing(sales, 0.25);
+      calculateRevenueSharing(sales, 0.12);
 
     const expectedPayToRyl = rylRevenue + debitsForRyl;
     const expectedPayToLan = lanRevenue + debitsForLan;
